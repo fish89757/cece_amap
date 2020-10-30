@@ -22,6 +22,9 @@ typedef Future<void> _OnRequireAlwaysAuth(CLLocationManager manager);
 /// 地图截屏回调签名
 typedef Future<void> OnScreenShot(Uint8List imageData);
 
+/// 地图poi点击事件回调签名
+typedef OnMapPoiClicked = Future<void> Function(Poi poi);
+
 /// 海量点点击回调签名
 typedef Future<void> OnMultiPointClicked(
   String id,
@@ -49,6 +52,7 @@ class AmapController with WidgetsBindingObserver {
 
   // iOS端的回调处理类
   final _iosMapDelegate = _IOSMapDelegate();
+
   // Android端的回调处理类
   final _androidMapDelegate = _AndroidMapDelegate();
 
@@ -1754,6 +1758,23 @@ class AmapController with WidgetsBindingObserver {
     );
   }
 
+  /// 设置poi点击监听事件
+  Future<void> setPoiClickedListener(OnMapPoiClicked onMapPoiClick) async {
+    await platform(
+      android: (pool) async {
+        final map = await androidController.getMap();
+        await map.setOnMapClickListener(
+          _androidMapDelegate..onMapPoiClicked = onMapPoiClick,
+        );
+      },
+      ios: (pool) async {
+//        await iosController.set_delegate(
+//          _iosMapDelegate..onMapPoiClicked = onMapPoiClick,
+//        );
+      },
+    );
+  }
+
   /// 设置地图移动监听事件
   Future<void> setMapMoveListener({
     OnMapMove onMapMoveStart,
@@ -2538,7 +2559,8 @@ class _AndroidMapDelegate extends java_lang_Object
         com_amap_api_maps_AMap_OnMyLocationChangeListener,
         com_amap_api_maps_AMap_OnInfoWindowClickListener,
         com_amap_api_maps_AMap_OnMapLoadedListener,
-        com_amap_api_maps_AMap_OnMultiPointClickListener {
+        com_amap_api_maps_AMap_OnMultiPointClickListener,
+        com_amap_api_maps_AMap_OnPOIClickListener {
   OnMarkerClicked _onMarkerClicked;
   OnMarkerDrag _onMarkerDragStart;
   OnMarkerDrag _onMarkerDragging;
@@ -2551,6 +2573,7 @@ class _AndroidMapDelegate extends java_lang_Object
   OnMarkerClicked _onInfoWindowClicked;
   VoidCallback _onMapLoaded;
   OnMultiPointClicked _onMultiPointClicked;
+  OnMapPoiClicked onMapPoiClicked;
 
   // 为了和ios端行为保持一致, 需要屏蔽掉移动过程中的回调
   bool _moveStarted = false;
@@ -2564,6 +2587,21 @@ class _AndroidMapDelegate extends java_lang_Object
       }
     }
     return true;
+  }
+
+  @override
+  Future<void> onPOIClick(com_amap_api_maps_model_Poi var1) async {
+    super.onPOIClick(var1);
+    if (onMapPoiClicked != null) {
+      com_amap_api_maps_model_LatLng ll = await var1.getCoordinate();
+      double lat = await ll.get_latitude();
+      double lon = await ll.get_longitude();
+
+      await onMapPoiClicked(Poi(
+          latLng: LatLng(lat, lon),
+          title: await var1.getName(),
+          poiId: await var1.getPoiId()));
+    }
   }
 
   @override
