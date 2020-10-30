@@ -40,6 +40,7 @@ class AmapView extends StatefulWidget {
     this.onMarkerClicked,
     this.onMapClicked,
     this.onMapMoveStart,
+    this.onMapPoiClicked,
     this.onMapMoveEnd,
     this.maskDelay = const Duration(seconds: 0),
     this.mask,
@@ -99,6 +100,9 @@ class AmapView extends StatefulWidget {
   /// 地图结束移动回调
   final OnMapMove onMapMoveEnd;
 
+  ///地图poi点击回调
+  final OnMapPoiClicked onMapPoiClicked;
+
   /// [PlatformView]创建时, 会有一下的黑屏, 这里提供一个在[PlatformView]初始化时, 盖住其黑屏
   /// 的遮罩, [maskDelay]配置延迟多少时间之后再显示地图, 默认不延迟, 即0.
   final Duration maskDelay;
@@ -112,6 +116,7 @@ class AmapView extends StatefulWidget {
 
 class _AmapViewState extends State<AmapView> {
   AmapController _controller;
+
   // _widgetLayer的存在是为了实现widget作为marker(或其他)而存在的. 添加widget作为marker后,
   // 会调用AmapViewState::setState, 然后等待一帧结束确认widget已经被渲染后再通过RepaintBoundary::toImage
   // 获取图片数据, 后面的流程和普通添加marker一样了.
@@ -287,6 +292,10 @@ class _AmapViewState extends State<AmapView> {
     }
     if (widget.onMapClicked != null) {
       await _controller?.setMapClickedListener(widget.onMapClicked);
+    }
+
+    if (widget.onMapPoiClicked != null) {
+      await _controller?.setPoiClickedListener(widget.onMapPoiClicked);
     }
     if (widget.onMapMoveStart != null || widget.onMapMoveEnd != null) {
       await _controller?.setMapMoveListener(
