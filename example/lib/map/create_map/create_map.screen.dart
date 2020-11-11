@@ -28,6 +28,10 @@ class _CreateMapScreenState extends State<CreateMapScreen> {
               onMapCreated: (controller) async {
                 _controller = controller;
               },
+              onMapPoiClicked: (_){
+                print(">>>>>>>>>>>>>>11");
+                return null;
+              },
             ),
           ),
           Flexible(

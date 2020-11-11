@@ -348,6 +348,11 @@ class _AmapViewState extends State<AmapView> {
     if (widget.onMapClicked != null) {
       await _controller?.setMapClickedListener(widget.onMapClicked);
     }
+
+    if (widget.onMapPoiClicked != null) {
+      await _controller?.setPoiClickedListener(widget.onMapPoiClicked);
+    }
+
     if (widget.onMapMoveStart != null || widget.onMapMoveEnd != null) {
       await _controller?.setMapMoveListener(
         onMapMoveStart: widget.onMapMoveStart,

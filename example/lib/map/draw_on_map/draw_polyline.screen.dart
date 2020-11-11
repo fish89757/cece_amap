@@ -54,18 +54,32 @@ class _DrawPolylineScreenState extends State<DrawPolylineScreen>
                 ListTile(
                   title: Center(child: Text('添加线')),
                   onTap: () async {
-                    _pointList = [
-                      getNextLatLng(),
-                      getNextLatLng(),
-                      getNextLatLng(),
-                      getNextLatLng(),
-                    ];
+//                    drawLines();
+//                    _pointList = [
+//                      getNextLatLng(),
+//                      getNextLatLng(),
+//                      getNextLatLng(),
+//                      getNextLatLng(),
+//                    ];
+
                     _currentPolyline =
-                        await _controller?.addPolyline(PolylineOption(
-                      latLngList: _pointList,
+                    await _controller?.addPolyline(PolylineOption(
+                      latLngList: [LatLng(-10,70),LatLng(30,70)],
                       width: 10,
                       strokeColor: Colors.green,
                     ));
+
+//                    await _controller?.addPolyline(PolylineOption(
+//                      latLngList: [LatLng(0,70),LatLng(30,70)],
+//                      width: 10,
+//                      strokeColor: Colors.lightGreenAccent,
+//                    ));
+//
+//                    await _controller?.addPolyline(PolylineOption(
+//                      latLngList: [LatLng(10,60),LatLng(50,60)],
+//                      width: 10,
+//                      strokeColor: Colors.red,
+//                    ));
                   },
                 ),
                 ListTile(
@@ -214,5 +228,24 @@ class _DrawPolylineScreenState extends State<DrawPolylineScreen>
         ],
       ),
     );
+  }
+
+  drawLine(double lat){
+    List<LatLng> list=[];
+    for (int i = 0; i <= (180 / 0.5).floor(); i++) {
+      list.add(LatLng(lat,i*1.0));
+    }
+     _controller?.addPolyline(PolylineOption(
+      latLngList: list,
+      width: 10,
+      strokeColor: Colors.green,
+    ));
+
+  }
+
+  drawLines(){
+    for(int i=0;i<88;i++){
+      drawLine(1.0+i*1.0);
+    }
   }
 }

@@ -281,7 +281,7 @@ mixin MAMapViewDelegate on NSObject {
   }
   
   @mustCallSuper
-  Future<void> mapView_didTouchPois(MAMapView mapView, List<NSObject> pois) {
+  Future<void> mapView_didTouchPois(MAMapView mapView, List<MATouchPoi> pois) {
     if (mapView is Ref) kNativeObjectPool.add(mapView);
     kNativeObjectPool.addAll(pois);
   

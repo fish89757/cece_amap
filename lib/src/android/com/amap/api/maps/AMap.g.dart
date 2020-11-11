@@ -1201,6 +1201,8 @@ class com_amap_api_maps_AMap extends java_lang_Object  {
   
   
   Future<void> setOnMapClickListener(com_amap_api_maps_AMap_OnMapClickListener var1) async {
+    print("setOnMapClickListener>>>>>>>>>");
+
     // print log
     if (fluttifyLogEnabled) {
       debugPrint('fluttify-dart: com.amap.api.maps.AMap@$refId::setOnMapClickListener([])');
@@ -1241,6 +1243,7 @@ class com_amap_api_maps_AMap extends java_lang_Object  {
   
   
   Future<void> setOnMapTouchListener(com_amap_api_maps_AMap_OnMapTouchListener var1) async {
+
     // print log
     if (fluttifyLogEnabled) {
       debugPrint('fluttify-dart: com.amap.api.maps.AMap@$refId::setOnMapTouchListener([])');
@@ -1281,6 +1284,7 @@ class com_amap_api_maps_AMap extends java_lang_Object  {
   
   
   Future<void> setOnPOIClickListener(com_amap_api_maps_AMap_OnPOIClickListener var1) async {
+    print("setOnPOIClickListener>>>>>>>>>");
     // print log
     if (fluttifyLogEnabled) {
       debugPrint('fluttify-dart: com.amap.api.maps.AMap@$refId::setOnPOIClickListener([])');
@@ -1300,7 +1304,7 @@ class com_amap_api_maps_AMap extends java_lang_Object  {
               if (fluttifyLogEnabled) {
                 debugPrint('fluttify-dart-callback: onPOIClick([\'var1\':${args['var1']}])');
               }
-        
+              print("onPOIClick>>>>>>>00000");
               // handle the native call
               var1?.onPOIClick(TypeOpAmapMapFluttifyAndroid((args['var1'] as Object))?.as__<com_amap_api_maps_model_Poi>());
               break;

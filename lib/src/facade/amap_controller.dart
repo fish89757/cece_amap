@@ -1289,7 +1289,6 @@ class AmapController with WidgetsBindingObserver {
           longitudeBatch,
         );
 
-        // 构造折线参数
         final polylineOptions =
             await com_amap_api_maps_model_PolylineOptions.create__();
 
@@ -1356,15 +1355,28 @@ class AmapController with WidgetsBindingObserver {
       },
       ios: (pool) async {
         await iosController.set_delegate(_iosMapDelegate);
+        List<com_amap_api_maps_model_LatLng> latLngList= await com_amap_api_maps_model_LatLng.create_batch__double__double(
+          latitudeBatch,
+          longitudeBatch,
+        );
+        List<CLLocationCoordinate2D> latLngListNew=[];
+        latLngList.forEach((element)async{
+          latLngListNew.add(await CLLocationCoordinate2D.create(await element.get_latitude(), await element.get_longitude()));
+        });
 
-        // 构造折线点
-        List<CLLocationCoordinate2D> latLngList =
-            await CLLocationCoordinate2D.create_batch(
-                latitudeBatch, longitudeBatch);
+            // 构造折线点
+//        List<CLLocationCoordinate2D> latLngList =
+//            await CLLocationCoordinate2D.create_batch(
+//                latitudeBatch, longitudeBatch);
+//        latLngList.forEach((element) async{
+//          print("lllll>>>>>>${await element.latitude},${await element.longitude}");
+//
+//        });
 
+//        List<CLLocationCoordinate2D> latLngList= await CLLocationCoordinate2D.create_batch(latitudeBatch, longitudeBatch);
         // 构造折线参数
         final polyline = await MAPolyline.polylineWithCoordinates_count(
-            latLngList, latLngList.length);
+            latLngListNew, latLngListNew.length);
 
         // 宽度和颜色需要设置到STACK里去
         if (option.width != null) {
@@ -1760,17 +1772,20 @@ class AmapController with WidgetsBindingObserver {
 
   /// 设置poi点击监听事件
   Future<void> setPoiClickedListener(OnMapPoiClicked onMapPoiClick) async {
+    print("setPoiClickedListener>>>>>0000");
     await platform(
       android: (pool) async {
+        print("setPoiClickedListener>>>>>1111");
+
         final map = await androidController.getMap();
-        await map.setOnMapClickListener(
+        await map.setOnPOIClickListener(
           _androidMapDelegate..onMapPoiClicked = onMapPoiClick,
         );
       },
       ios: (pool) async {
-//        await iosController.set_delegate(
-//          _iosMapDelegate..onMapPoiClicked = onMapPoiClick,
-//        );
+        await iosController.set_delegate(
+          _iosMapDelegate.._onMapPoiClicked = onMapPoiClick,
+        );
       },
     );
   }
@@ -2301,6 +2316,7 @@ class _IOSMapDelegate extends NSObject
   OnLocationChange _onLocationChange;
   OnMarkerClicked _onInfoWindowClicked;
   OnMultiPointClicked _onMultiPointClicked;
+  OnMapPoiClicked _onMapPoiClicked;
 
   MAMapView _iosController;
   Completer<List<MAAnnotationView>> _annotationViewCompleter;
@@ -2319,6 +2335,32 @@ class _IOSMapDelegate extends NSObject
       _annotationViewCompleter.complete(result);
     }
   }
+
+
+  @override
+  Future<void> mapView_didTouchPois(MAMapView mapView, List<MATouchPoi> pois) async {
+    super.mapView_didTouchPois(mapView, pois);
+    if (_onMapPoiClicked != null) {
+       CLLocationCoordinate2D s= await pois[0].get_coordinate();
+      print('lalalala ${await pois[0].get_name()  } ${await s.longitude}');
+       await _onMapPoiClicked(Poi(title: await pois[0].get_name(),latLng: LatLng(await s.latitude,await s.longitude)));
+//      await _onMarkerClicked(
+//        Marker.ios(
+//          // 这里由于传入的类型是MAAnnotation, 而fluttify对于抽象类的实体子类的处理方式是找到sdk
+//          // 内的第一个实体子类进行实例化, 这里如果放任不管取第一个实体子类的话是MAGroundOverlay
+//          // 跟当前需要的MAPointAnnotation类是冲突的.
+//          //
+//          // 解决办法很简单, 把refId取出来放到目标实体类里就行了
+//          MAPointAnnotation()
+//            ..refId = (await view.get_annotation(viewChannel: false)).refId,
+//          view,
+//          _iosController,
+//        ),
+//      );
+    }
+  }
+
+
 
   @override
   Future<void> mapView_didAnnotationViewTapped(
@@ -2592,6 +2634,7 @@ class _AndroidMapDelegate extends java_lang_Object
   @override
   Future<void> onPOIClick(com_amap_api_maps_model_Poi var1) async {
     super.onPOIClick(var1);
+    print("onPOIClick>>>>>>1111111");
     if (onMapPoiClicked != null) {
       com_amap_api_maps_model_LatLng ll = await var1.getCoordinate();
       double lat = await ll.get_latitude();
@@ -2631,6 +2674,8 @@ class _AndroidMapDelegate extends java_lang_Object
   @override
   Future<void> onMapClick(com_amap_api_maps_model_LatLng var1) async {
     super.onMapClick(var1);
+    print("onMapClick>>>>>>11111");
+
     if (_onMapClick != null) {
       await _onMapClick(LatLng(
         await var1.get_latitude(),

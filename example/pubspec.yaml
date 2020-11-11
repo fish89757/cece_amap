@@ -23,6 +23,9 @@ dev_dependencies:
   amap_map_fluttify:
     path: ../
 
+dependency_overrides:
+  flutter_svg: 0.19.1
+
 flutter:
   uses-material-design: true
   assets:
