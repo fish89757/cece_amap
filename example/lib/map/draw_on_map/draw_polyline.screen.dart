@@ -64,7 +64,7 @@ class _DrawPolylineScreenState extends State<DrawPolylineScreen>
 
                     _currentPolyline =
                     await _controller?.addPolyline(PolylineOption(
-                      latLngList: [LatLng(-10,70),LatLng(30,70)],
+                      latLngList: [LatLng(-10,118),LatLng(30,118)],
                       width: 10,
                       strokeColor: Colors.green,
                     ));

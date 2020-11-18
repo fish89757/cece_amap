@@ -1355,19 +1355,19 @@ class AmapController with WidgetsBindingObserver {
       },
       ios: (pool) async {
         await iosController.set_delegate(_iosMapDelegate);
-        List<com_amap_api_maps_model_LatLng> latLngList= await com_amap_api_maps_model_LatLng.create_batch__double__double(
-          latitudeBatch,
-          longitudeBatch,
-        );
-        List<CLLocationCoordinate2D> latLngListNew=[];
-        latLngList.forEach((element)async{
-          latLngListNew.add(await CLLocationCoordinate2D.create(await element.get_latitude(), await element.get_longitude()));
-        });
+//        List<com_amap_api_maps_model_LatLng> latLngList= await com_amap_api_maps_model_LatLng.create_batch__double__double(
+//          latitudeBatch,
+//          longitudeBatch,
+//        );
+//        List<CLLocationCoordinate2D> latLngListNew=[];
+//        latLngList.forEach((element)async{
+//          latLngListNew.add(await CLLocationCoordinate2D.create(await element.get_latitude(), await element.get_longitude()));
+//        });
 
-            // 构造折线点
-//        List<CLLocationCoordinate2D> latLngList =
-//            await CLLocationCoordinate2D.create_batch(
-//                latitudeBatch, longitudeBatch);
+        // 构造折线点
+        List<CLLocationCoordinate2D> latLngList =
+            await CLLocationCoordinate2D.create_batch(
+                latitudeBatch, longitudeBatch);
 //        latLngList.forEach((element) async{
 //          print("lllll>>>>>>${await element.latitude},${await element.longitude}");
 //
@@ -1376,7 +1376,7 @@ class AmapController with WidgetsBindingObserver {
 //        List<CLLocationCoordinate2D> latLngList= await CLLocationCoordinate2D.create_batch(latitudeBatch, longitudeBatch);
         // 构造折线参数
         final polyline = await MAPolyline.polylineWithCoordinates_count(
-            latLngListNew, latLngListNew.length);
+            latLngList, latLngList.length);
 
         // 宽度和颜色需要设置到STACK里去
         if (option.width != null) {
@@ -2336,14 +2336,16 @@ class _IOSMapDelegate extends NSObject
     }
   }
 
-
   @override
-  Future<void> mapView_didTouchPois(MAMapView mapView, List<MATouchPoi> pois) async {
+  Future<void> mapView_didTouchPois(
+      MAMapView mapView, List<MATouchPoi> pois) async {
     super.mapView_didTouchPois(mapView, pois);
     if (_onMapPoiClicked != null) {
-       CLLocationCoordinate2D s= await pois[0].get_coordinate();
-      print('lalalala ${await pois[0].get_name()  } ${await s.longitude}');
-       await _onMapPoiClicked(Poi(title: await pois[0].get_name(),latLng: LatLng(await s.latitude,await s.longitude)));
+      CLLocationCoordinate2D s = await pois[0].get_coordinate();
+      print('lalalala ${await pois[0].get_name()} ${await s.longitude}');
+      await _onMapPoiClicked(Poi(
+          title: await pois[0].get_name(),
+          latLng: LatLng(await s.latitude, await s.longitude)));
 //      await _onMarkerClicked(
 //        Marker.ios(
 //          // 这里由于传入的类型是MAAnnotation, 而fluttify对于抽象类的实体子类的处理方式是找到sdk
@@ -2359,8 +2361,6 @@ class _IOSMapDelegate extends NSObject
 //      );
     }
   }
-
-
 
   @override
   Future<void> mapView_didAnnotationViewTapped(
